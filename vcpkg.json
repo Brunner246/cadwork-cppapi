@@ -1,0 +1,13 @@
+{
+  "name": "borderline",
+  "version": "1.0.0",
+  "dependencies": [
+    {
+      "name": "cwapi3d",
+      "version>=": "32.219.1"
+    },
+    {
+      "name": "doctest"
+    }
+  ]
+}
