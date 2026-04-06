@@ -18,3 +18,9 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}
 )
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+        CWAPI3D_PLUGIN_NAME=L"Cadwork Test Plugin"
+        CWAPI3D_AUTHOR_NAME=L"Your Name"
+        CWAPI3D_AUTHOR_EMAIL=L"your_name@something.swiss"
+)
