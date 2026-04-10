@@ -8,93 +8,32 @@
   "include": [],
   "configurePresets": [
     {
-      "name": "base",
+      "name": "vs-base",
       "hidden": true,
       "generator": "Visual Studio 17 2022",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
-      "environment": {
-        "VCPKG_ROOT": "C:/vcpkg"
-      },
       "cacheVariables": {
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
     {
-      "name": "vs2022-debug",
-      "displayName": "VS 2022 - Debug",
-      "description": "Configure Debug build with Visual Studio 2022 and vcpkg toolchain (VCPKG_ROOT must be set).",
-      "inherits": ["base"],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
-      "name": "vs2022-release",
-      "displayName": "VS 2022 - Release",
-      "description": "Configure Release build with Visual Studio 2022 and vcpkg toolchain (VCPKG_ROOT must be set).",
-      "inherits": ["base"],
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "ninja-debug",
-      "displayName": "Ninja - Debug (vcpkg)",
-      "description": "Configure Debug build using Ninja and vcpkg via VCPKG_ROOT.",
+      "name": "ninja-base",
+      "hidden": true,
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}",
-      "environment": {
-        "VCPKG_ROOT": "C:/vcpkg"
-      },
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "CMAKE_CXX_STANDARD": "20",
-        "CMAKE_CXX_STANDARD_REQUIRED": "ON",
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      }
-    },
-    {
-      "name": "ninja-release",
-      "displayName": "Ninja - Release (vcpkg)",
-      "description": "Configure Release build using Ninja and vcpkg via VCPKG_ROOT.",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/out/build/${presetName}",
-      "installDir": "${sourceDir}/out/install/${presetName}",
-      "environment": {
-        "VCPKG_ROOT": "C:/vcpkg"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-        "CMAKE_CXX_STANDARD": "20",
+        "CMAKE_CXX_STANDARD": "23",
         "CMAKE_CXX_STANDARD_REQUIRED": "ON",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     }
   ],
-  "buildPresets": [
-    {
-      "name": "vs2022-debug",
-      "configurePreset": "vs2022-debug"
-    },
-    {
-      "name": "vs2022-release",
-      "configurePreset": "vs2022-release"
-    },
-    {
-      "name": "ninja-debug",
-      "configurePreset": "ninja-debug"
-    },
-    {
-      "name": "ninja-release",
-      "configurePreset": "ninja-release"
-    }
-  ],
+  "buildPresets": [],
   "testPresets": []
 }

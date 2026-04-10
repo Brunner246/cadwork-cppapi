@@ -1,0 +1,16 @@
+CompileFlags:
+  Add: [-Wall, -Wextra, -Wpedantic, -std=c++23, -Wno-c++98-compat, -Wno-c++98-compat-pedantic, -Wno-padded]
+
+Diagnostics:
+  ClangTidy:
+    Remove: []
+  UnusedIncludes: Strict
+
+InlayHints:
+  Enabled: true
+  ParameterNames: true
+  DeducedTypes: true
+  Designators: true
+
+Hover:
+  ShowAKA: true
