@@ -25,4 +25,12 @@ if(MSVC)
     add_compile_options(/W4 /wd4251)  # Warning 4251 (DLL-Interface) ignore
 endif()
 
+# ==============================================================================
+# Subdirectories
+# ==============================================================================
+
+# Internal libraries
+add_subdirectory(libs/geometry)
+
+# Application
 add_subdirectory(src)

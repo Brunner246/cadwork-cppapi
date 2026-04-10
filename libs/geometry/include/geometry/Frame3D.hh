@@ -1,12 +1,15 @@
-#ifndef FRAME3D_HH
-#define FRAME3D_HH
+#ifndef GEOMETRY_FRAME3D_HH
+#define GEOMETRY_FRAME3D_HH
 
-#include "Point3D.hh"
-#include "Vector3D.hh"
+#include "geometry/Point3D.hh"
+#include "geometry/Vector3D.hh"
+#include "geometry/export.hh"
 
 #include <array>
 #include <ostream>
 
+
+namespace geometry {
 /**
  * @brief Represents a 3D coordinate frame (coordinate system).
  *
@@ -21,7 +24,7 @@
  * Both methods produce identical results but illustrate different approaches
  * to the same mathematical problem.
  */
-class Frame3D {
+class GEOMETRY_API Frame3D {
   public:
     // ========================================================================
     // Constructors
@@ -244,7 +247,7 @@ class Frame3D {
     static Frame3D worldFrame();
 
     // Stream output
-    friend std::ostream &operator<<(std::ostream &os, const Frame3D &frame);
+    friend GEOMETRY_API std::ostream &operator<<(std::ostream &os, const Frame3D &frame);
 
   private:
     Point3D m_origin; ///< Origin of the coordinate system
@@ -252,5 +255,5 @@ class Frame3D {
     Vector3D m_axisY; ///< Y-axis (unit vector)
     Vector3D m_axisZ; ///< Z-axis (unit vector)
 };
-
-#endif // FRAME3D_HH
+} // namespace geometry
+#endif // GEOMETRY_FRAME3D_HH

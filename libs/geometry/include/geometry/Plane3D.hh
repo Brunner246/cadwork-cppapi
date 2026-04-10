@@ -1,20 +1,24 @@
-#ifndef PLANE3D_HH
-#define PLANE3D_HH
+#ifndef GEOMETRY_PLANE3D_HH
+#define GEOMETRY_PLANE3D_HH
 
-#include "Point3D.hh"
-#include "Vector3D.hh"
+#include "geometry/Point3D.hh"
+#include "geometry/Vector3D.hh"
+#include "geometry/export.hh"
 
 #include <optional>
 #include <ostream>
+
+
+namespace geometry {
 
 /**
  * @brief Represents an infinite plane in 3D space.
  *
  * A plane is defined by a point on the plane and a normal vector.
- * The plane equation is: n · (P - P0) = 0, or equivalently: ax + by + cz + d = 0
- * where (a, b, c) is the normal vector and d = -n · P0.
+ * The plane equation is: n · (P - P0) = 0, or equivalently: ax + by + cz + d =
+ * 0 where (a, b, c) is the normal vector and d = -n · P0.
  */
-class Plane3D {
+class GEOMETRY_API Plane3D {
   public:
     [[nodiscard]] static Plane3D fromDefault() { return {}; }
 
@@ -210,7 +214,7 @@ class Plane3D {
     bool operator!=(const Plane3D &other) const;
 
     // Stream output
-    friend std::ostream &operator<<(std::ostream &os, const Plane3D &plane);
+    friend GEOMETRY_API std::ostream &operator<<(std::ostream &os, const Plane3D &plane);
 
   private:
     Point3D m_point;   ///< A point on the plane
@@ -256,5 +260,5 @@ class Plane3D {
     Plane3D &operator=(Plane3D &&) noexcept = default;
     ~Plane3D() = default;
 };
-
-#endif // PLANE3D_HH
+} // namespace geometry
+#endif // GEOMETRY_PLANE3D_HH

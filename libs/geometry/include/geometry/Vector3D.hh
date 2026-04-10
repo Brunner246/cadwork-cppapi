@@ -1,17 +1,21 @@
-#ifndef VECTOR3D_HH
-#define VECTOR3D_HH
+#ifndef GEOMETRY_VECTOR3D_HH
+#define GEOMETRY_VECTOR3D_HH
 
-#include <cmath>
+#include "geometry/export.hh"
+
 #include <ostream>
 
+namespace geometry {
 class Point3D;
+}
 
+namespace geometry {
 /**
  * @brief Represents a vector in 3D space.
  *
  * A vector has direction and magnitude, unlike a point which represents a location.
  */
-class Vector3D {
+class GEOMETRY_API Vector3D {
   public:
     double x;
     double y;
@@ -43,7 +47,7 @@ class Vector3D {
     Vector3D operator/(double scalar) const;
     Vector3D &operator*=(double scalar);
     Vector3D &operator/=(double scalar);
-    friend Vector3D operator*(double scalar, const Vector3D &v);
+    friend GEOMETRY_API Vector3D operator*(double scalar, const Vector3D &v);
 
     // Comparison operators
     bool operator==(const Vector3D &other) const;
@@ -76,7 +80,9 @@ class Vector3D {
     static constexpr Vector3D unitZ() noexcept { return Vector3D(0.0, 0.0, 1.0); }
 
     // Stream output
-    friend std::ostream &operator<<(std::ostream &os, const Vector3D &v);
+    friend GEOMETRY_API std::ostream &operator<<(std::ostream &os, const Vector3D &v);
 };
 
-#endif // VECTOR3D_HH
+} // namespace geometry
+
+#endif // GEOMETRY_VECTOR3D_HH

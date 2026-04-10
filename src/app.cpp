@@ -1,17 +1,18 @@
-#include "Frame3D.hh"
-#include "Point3D.hh"
-
 #include <cstdint>
 #include <cwapi3d/CwAPI3D.h>
 #include <cwapi3d/CwAPI3DTypes.h>
 #include <cwapi3d/ICwAPI3DElementIDList.h>
 #include <functional>
+#include <geometry/Frame3D.hh>
+#include <geometry/Point3D.hh>
+#include <geometry/Vector3D.hh>
 #include <iostream>
 #include <iterator>
 #include <optional>
 #include <ranges>
 #include <string>
 #include <utility>
+
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -67,7 +68,7 @@ struct alignas(64) ElementData {
     uint64_t id;
     std::string name;
     std::optional<ElementType> type;
-    Frame3D localFrame; // Example of including a complex type in the data structure
+    geometry::Frame3D localFrame; // Example of including a complex type in the data structure
 };
 
 std::ostream &operator<<(std::ostream &os, const ElementData &element) {
@@ -85,7 +86,7 @@ std::ostream &operator<<(std::ostream &os, const ElementData &element) {
 auto toElementData(CwAPI3D::Interfaces::ICwAPI3DElementIDList *elementIDs,
                    const std::function<std::string(uint64_t)> &getNameFunc,
                    const std::function<std::optional<ElementType>(uint64_t)> &getTypeFunc,
-                   const std::function<Frame3D(uint64_t)> &getFrameFunc)
+                   const std::function<geometry::Frame3D(uint64_t)> &getFrameFunc)
     -> std::vector<ElementData> {
     std::vector<ElementData> elements;
     const auto count = elementIDs->count();
@@ -93,7 +94,7 @@ auto toElementData(CwAPI3D::Interfaces::ICwAPI3DElementIDList *elementIDs,
         const auto elementId = elementIDs->at(i);
         std::string name = getNameFunc(elementId);
         std::optional<ElementType> type = getTypeFunc(elementId);
-        Frame3D localFrame = getFrameFunc(elementId);
+        geometry::Frame3D localFrame = getFrameFunc(elementId);
         elements.emplace_back(
             ElementData{.id = elementId, .name = name, .type = type, .localFrame = localFrame});
     }
@@ -147,14 +148,14 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
 
     auto *geometryController = factory->getGeometryController();
 
-    auto getFrameFunc = [geometryController](uint64_t elementId) -> Frame3D {
+    auto getFrameFunc = [geometryController](uint64_t elementId) -> geometry::Frame3D {
         const auto origin = geometryController->getP1(elementId);
         const auto axisX = geometryController->getXL(elementId);
         const auto axisY = geometryController->getYL(elementId);
 
-        return Frame3D(Point3D(origin.mX, origin.mY, origin.mZ),
-                       Vector3D(axisX.mX, axisX.mY, axisX.mZ),
-                       Vector3D(axisY.mX, axisY.mY, axisY.mZ));
+        return geometry::Frame3D(geometry::Point3D(origin.mX, origin.mY, origin.mZ),
+                                 geometry::Vector3D(axisX.mX, axisX.mY, axisX.mZ),
+                                 geometry::Vector3D(axisY.mX, axisY.mY, axisY.mZ));
     };
 
     std::vector<ElementData> elements =
@@ -172,7 +173,8 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
 
     if (!std::empty(filteredElements)) {
         const auto &firstBeam = filteredElements.front();
-        const auto lToWorldPoint = firstBeam.localFrame.localToWorld(Point3D{0.0, 20.0, 20.0});
+        const auto lToWorldPoint =
+            firstBeam.localFrame.localToWorld(geometry::Point3D{0.0, 20.0, 20.0});
         // const auto lToWorldPoint = firstBeam.localFrame.localToWorld(localPoint);
         elementController->createNode(
             CwAPI3D::vector3D{lToWorldPoint.x, lToWorldPoint.y, lToWorldPoint.z});

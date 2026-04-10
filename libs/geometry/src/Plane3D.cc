@@ -1,9 +1,10 @@
-#include "Plane3D.hh"
+#include "geometry/Plane3D.hh"
 
 #include <array>
 #include <cmath>
 #include <stdexcept>
 
+namespace geometry {
 // ============================================================================
 // Constructors
 // ============================================================================
@@ -235,3 +236,4 @@ std::ostream &operator<<(std::ostream &os, const Plane3D &plane) {
        << " = 0)";
     return os;
 }
+} // namespace geometry
