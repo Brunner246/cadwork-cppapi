@@ -1,8 +1,10 @@
 {
+  "editor.formatOnSave": true,
   "cmake.useCMakePresets": "always",
-  "cmake.configurePreset": "vs2022-debug",
-  "cmake.buildPreset": "vs2022-debug",
+  "cmake.configurePreset": "ninja-debug",
+  "cmake.buildPreset": "ninja-debug",
   "[cpp]": {
     "editor.defaultFormatter": "xaver.clang-format"
-  }
+  },
+  "clang-format.executable": "C:/Program Files (x86)/Microsoft Visual Studio/2022/BuildTools/VC/Tools/Llvm/x64/bin/clang-format.exe"
 }

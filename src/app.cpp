@@ -1,8 +1,13 @@
+#include "Frame3D.hh"
+#include "Point3D.hh"
+
 #include <cstdint>
 #include <cwapi3d/CwAPI3D.h>
+#include <cwapi3d/CwAPI3DTypes.h>
 #include <cwapi3d/ICwAPI3DElementIDList.h>
 #include <functional>
 #include <iostream>
+#include <iterator>
 #include <optional>
 #include <ranges>
 #include <string>
@@ -20,8 +25,8 @@ namespace {
     const int size = WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()),
                                          nullptr, 0, nullptr, nullptr);
     std::string result(size, '\0');
-    WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()),
-                        result.data(), size, nullptr, nullptr);
+    WideCharToMultiByte(CP_UTF8, 0, wstr.data(), static_cast<int>(wstr.size()), result.data(), size,
+                        nullptr, nullptr);
     return result;
 }
 
@@ -62,6 +67,7 @@ struct alignas(64) ElementData {
     uint64_t id;
     std::string name;
     std::optional<ElementType> type;
+    Frame3D localFrame; // Example of including a complex type in the data structure
 };
 
 std::ostream &operator<<(std::ostream &os, const ElementData &element) {
@@ -71,14 +77,15 @@ std::ostream &operator<<(std::ostream &os, const ElementData &element) {
     } else {
         os << ", type: None";
     }
+    os << ", localFrame: " << element.localFrame;
     os << '}';
     return os;
 }
 
-
 auto toElementData(CwAPI3D::Interfaces::ICwAPI3DElementIDList *elementIDs,
                    const std::function<std::string(uint64_t)> &getNameFunc,
-                   const std::function<std::optional<ElementType>(uint64_t)> &getTypeFunc)
+                   const std::function<std::optional<ElementType>(uint64_t)> &getTypeFunc,
+                   const std::function<Frame3D(uint64_t)> &getFrameFunc)
     -> std::vector<ElementData> {
     std::vector<ElementData> elements;
     const auto count = elementIDs->count();
@@ -86,7 +93,9 @@ auto toElementData(CwAPI3D::Interfaces::ICwAPI3DElementIDList *elementIDs,
         const auto elementId = elementIDs->at(i);
         std::string name = getNameFunc(elementId);
         std::optional<ElementType> type = getTypeFunc(elementId);
-        elements.emplace_back(ElementData{.id = elementId, .name = name, .type = type});
+        Frame3D localFrame = getFrameFunc(elementId);
+        elements.emplace_back(
+            ElementData{.id = elementId, .name = name, .type = type, .localFrame = localFrame});
     }
     return elements;
 }
@@ -122,37 +131,52 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
         auto *typeAttr = attributeController->getElementType(elementId);
         if (typeAttr->isFramedWall()) {
             return ElementType::Wall;
-        }
-        else if (typeAttr->isFloor()) {
+        } else if (typeAttr->isFloor()) {
             return ElementType::Floor;
-        }
-        else if (typeAttr->isRoof()) {
+        } else if (typeAttr->isRoof()) {
             return ElementType::Roof;
-        }
-        else if (typeAttr->isOpening()) {
+        } else if (typeAttr->isOpening()) {
             return ElementType::Opening;
-        }
-        else if (typeAttr->isRectangularBeam()) {
+        } else if (typeAttr->isRectangularBeam()) {
             return ElementType::Beam;
-        }
-        else if (typeAttr->isPanel()) {
+        } else if (typeAttr->isPanel()) {
             return ElementType::Plate;
-        
         }
         return std::nullopt;
     };
 
-    std::vector<ElementData> elements = toElementData(elementIDs, getNameFunc, getTypeFunc);
+    auto *geometryController = factory->getGeometryController();
+
+    auto getFrameFunc = [geometryController](uint64_t elementId) -> Frame3D {
+        const auto origin = geometryController->getP1(elementId);
+        const auto axisX = geometryController->getXL(elementId);
+        const auto axisY = geometryController->getYL(elementId);
+
+        return Frame3D(Point3D(origin.mX, origin.mY, origin.mZ),
+                       Vector3D(axisX.mX, axisX.mY, axisX.mZ),
+                       Vector3D(axisY.mX, axisY.mY, axisY.mZ));
+    };
+
+    std::vector<ElementData> elements =
+        toElementData(elementIDs, getNameFunc, getTypeFunc, getFrameFunc);
     const auto filteredElements =
-        elements 
-        | std::views::filter([](const ElementData &e) { return e.type.has_value(); })
-        | std::views::filter([](const ElementData &e) { return e.type.value() == ElementType::Beam; })
+        elements | std::views::filter([](const ElementData &e) { return e.type.has_value(); })
+        | std::views::filter(
+            [](const ElementData &e) { return e.type.value() == ElementType::Beam; })
         | std::views::transform([](const ElementData &e) { return e; })
         | std::ranges::to<std::vector>();
 
     std::cout << "Filtered beam elements: ";
     std::ranges::copy(filteredElements, std::ostream_iterator<ElementData>(std::cout, "; "));
     std::cout << '\n';
+
+    if (!std::empty(filteredElements)) {
+        const auto &firstBeam = filteredElements.front();
+        const auto lToWorldPoint = firstBeam.localFrame.localToWorld(Point3D{0.0, 20.0, 20.0});
+        // const auto lToWorldPoint = firstBeam.localFrame.localToWorld(localPoint);
+        elementController->createNode(
+            CwAPI3D::vector3D{lToWorldPoint.x, lToWorldPoint.y, lToWorldPoint.z});
+    }
 
     std::initializer_list v1 = {1, 2, 3, 1, 2, 3, 3, 3, 1, 2, 3};
     auto fn1 = std::ranges::less{};

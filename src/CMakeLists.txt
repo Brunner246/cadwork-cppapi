@@ -5,6 +5,14 @@ find_package(CwAPI3D CONFIG REQUIRED)
 
 target_sources(${PROJECT_NAME} PRIVATE
     app.cpp
+    Point3D.hh
+    Point3D.cc
+    Vector3D.hh
+    Vector3D.cc
+    Frame3D.hh
+    Frame3D.cc
+    Plane3D.hh
+    Plane3D.cc
 )
 
 target_link_libraries(${PROJECT_NAME}
