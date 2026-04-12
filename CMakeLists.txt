@@ -25,6 +25,9 @@ if(MSVC)
     add_compile_options(/W4 /wd4251)  # Warning 4251 (DLL-Interface) ignore
 endif()
 
+# Enable CTest support (sets the BUILD_TESTING option, default ON).
+include(CTest)
+
 # ==============================================================================
 # Subdirectories
 # ==============================================================================

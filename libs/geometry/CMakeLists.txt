@@ -163,3 +163,12 @@ install(FILES
     "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}
 )
+
+# ==============================================================================
+# Tests
+# ==============================================================================
+# Guarded by BUILD_TESTING (set by include(CTest) in the root CMakeLists.txt).
+# Pass -DBUILD_TESTING=OFF to disable the test build.
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()
