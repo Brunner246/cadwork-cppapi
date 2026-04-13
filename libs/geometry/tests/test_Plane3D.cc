@@ -61,13 +61,13 @@
  *   operator<< emits "Plane3D(ax + by + cz + d = 0)".
  */
 
-#include <doctest/doctest.h>
-
 #include "geometry/Plane3D.hh"
 #include "geometry/Point3D.hh"
 #include "geometry/Vector3D.hh"
 
+#include <array>
 #include <cmath>
+#include <doctest/doctest.h>
 #include <numbers>
 #include <optional>
 #include <sstream>
@@ -81,7 +81,7 @@ using namespace geometry;
 
 static constexpr double EPS = 1e-9;
 
-static void checkPoint(const Point3D& a, const Point3D& b, double eps = EPS) {
+static void checkPoint(const Point3D &a, const Point3D &b, double eps = EPS) {
     CHECK(std::abs(a.x - b.x) < eps);
     CHECK(std::abs(a.y - b.y) < eps);
     CHECK(std::abs(a.z - b.z) < eps);
@@ -112,10 +112,7 @@ TEST_SUITE("Plane3D") {
         /**
          * A non-unit normal (0,0,5) must be normalized to (0,0,1).
          */
-        const Plane3D p = Plane3D::fromPointAndNormal(
-            Point3D::origin(),
-            Vector3D(0.0, 0.0, 5.0)
-        );
+        const Plane3D p = Plane3D::fromPointAndNormal(Point3D::origin(), Vector3D(0.0, 0.0, 5.0));
         CHECK(p.normal() == Vector3D::unitZ());
     }
 
@@ -156,7 +153,7 @@ TEST_SUITE("Plane3D") {
         const Point3D p1(0.0, 0.0, 0.0);
         const Point3D p2(1.0, 0.0, 0.0);
         const Point3D p3(2.0, 0.0, 0.0); // collinear
-        CHECK_THROWS_AS(Plane3D::fromThreePoints(p1, p2, p3), std::invalid_argument);
+        CHECK_THROWS_AS(std::ignore = Plane3D::fromThreePoints(p1, p2, p3), std::invalid_argument);
     }
 
     TEST_CASE("fromCoefficients: round-trips through coefficients()") {
@@ -172,7 +169,8 @@ TEST_SUITE("Plane3D") {
     }
 
     TEST_CASE("fromCoefficients: zero normal throws std::invalid_argument") {
-        CHECK_THROWS_AS(Plane3D::fromCoefficients(0.0, 0.0, 0.0, 1.0), std::invalid_argument);
+        CHECK_THROWS_AS(std::ignore = Plane3D::fromCoefficients(0.0, 0.0, 0.0, 1.0),
+                        std::invalid_argument);
     }
 
     // ==========================================================================
@@ -194,10 +192,8 @@ TEST_SUITE("Plane3D") {
         const Plane3D p = Plane3D::fromPointAndNormal(Point3D(0.0, 0.0, 5.0), Vector3D::unitZ());
         const auto coeff = p.coefficients();
         const Point3D onPlane(3.0, 7.0, 5.0);
-        const double val = coeff[0] * onPlane.x
-                         + coeff[1] * onPlane.y
-                         + coeff[2] * onPlane.z
-                         + coeff[3];
+        const double val =
+            coeff[0] * onPlane.x + coeff[1] * onPlane.y + coeff[2] * onPlane.z + coeff[3];
         CHECK(val == doctest::Approx(0.0));
     }
 
@@ -244,7 +240,7 @@ TEST_SUITE("Plane3D") {
 
     TEST_CASE("distanceTo(Point3D): always non-negative") {
         const Plane3D p = Plane3D::fromDefault();
-        CHECK(p.distanceTo(Point3D(0.0, 0.0,  3.0)) == doctest::Approx(3.0));
+        CHECK(p.distanceTo(Point3D(0.0, 0.0, 3.0)) == doctest::Approx(3.0));
         CHECK(p.distanceTo(Point3D(0.0, 0.0, -3.0)) == doctest::Approx(3.0));
     }
 
@@ -275,16 +271,16 @@ TEST_SUITE("Plane3D") {
 
     TEST_CASE("isAbove: true only for points on the normal side") {
         const Plane3D p = Plane3D::fromDefault();
-        CHECK(p.isAbove(Point3D(0.0, 0.0,  1.0)));
+        CHECK(p.isAbove(Point3D(0.0, 0.0, 1.0)));
         CHECK_FALSE(p.isAbove(Point3D(0.0, 0.0, -1.0)));
-        CHECK_FALSE(p.isAbove(Point3D(0.0, 0.0,  0.0))); // on plane → not above
+        CHECK_FALSE(p.isAbove(Point3D(0.0, 0.0, 0.0))); // on plane → not above
     }
 
     TEST_CASE("isBelow: true only for points on the anti-normal side") {
         const Plane3D p = Plane3D::fromDefault();
         CHECK(p.isBelow(Point3D(0.0, 0.0, -1.0)));
-        CHECK_FALSE(p.isBelow(Point3D(0.0, 0.0,  1.0)));
-        CHECK_FALSE(p.isBelow(Point3D(0.0, 0.0,  0.0))); // on plane → not below
+        CHECK_FALSE(p.isBelow(Point3D(0.0, 0.0, 1.0)));
+        CHECK_FALSE(p.isBelow(Point3D(0.0, 0.0, 0.0))); // on plane → not below
     }
 
     // ==========================================================================
@@ -309,7 +305,7 @@ TEST_SUITE("Plane3D") {
     }
 
     TEST_CASE("projectPoint: distance to plane is 0 after projection") {
-        const Plane3D p = Plane3D::fromPointAndNormal(Point3D(0.0,0.0,2.0), Vector3D::unitZ());
+        const Plane3D p = Plane3D::fromPointAndNormal(Point3D(0.0, 0.0, 2.0), Vector3D::unitZ());
         const Point3D proj = p.projectPoint(Point3D(7.0, -5.0, 9.0));
         CHECK(p.distanceTo(proj) == doctest::Approx(0.0));
     }
@@ -459,7 +455,8 @@ TEST_SUITE("Plane3D") {
     }
 
     TEST_CASE("intersectLine: hit point lies on the plane") {
-        const Plane3D plane = Plane3D::fromPointAndNormal(Point3D(0.0, 0.0, 3.0), Vector3D::unitZ());
+        const Plane3D plane =
+            Plane3D::fromPointAndNormal(Point3D(0.0, 0.0, 3.0), Vector3D::unitZ());
         const auto hit = plane.intersectLine(Point3D(0.0, 0.0, 0.0), Vector3D(1.0, 1.0, 1.0));
         REQUIRE(hit.has_value());
         CHECK(plane.contains(hit.value()));
@@ -482,20 +479,16 @@ TEST_SUITE("Plane3D") {
          * t = n·(P0-linePoint) / n·dir = (0,0,1)·(0,0,-2) / (0,0,1)·(0,0,-1) = -2 / -1 = 2.
          */
         const Plane3D plane = Plane3D::fromDefault();
-        const auto t = plane.intersectLineParameter(
-            Point3D(0.0, 0.0, 2.0),
-            Vector3D(0.0, 0.0, -1.0)
-        );
+        const auto t =
+            plane.intersectLineParameter(Point3D(0.0, 0.0, 2.0), Vector3D(0.0, 0.0, -1.0));
         REQUIRE(t.has_value());
         CHECK(t.value() == doctest::Approx(2.0));
     }
 
     TEST_CASE("intersectLineParameter: parallel line returns nullopt") {
         const Plane3D plane = Plane3D::fromDefault();
-        const auto t = plane.intersectLineParameter(
-            Point3D(0.0, 0.0, 1.0),
-            Vector3D(1.0, 0.0, 0.0)
-        );
+        const auto t =
+            plane.intersectLineParameter(Point3D(0.0, 0.0, 1.0), Vector3D(1.0, 0.0, 0.0));
         CHECK_FALSE(t.has_value());
     }
 

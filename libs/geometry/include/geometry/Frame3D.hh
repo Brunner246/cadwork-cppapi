@@ -8,7 +8,6 @@
 #include <array>
 #include <ostream>
 
-
 namespace geometry {
 /**
  * @brief Represents a 3D coordinate frame (coordinate system).
@@ -95,10 +94,10 @@ class GEOMETRY_API Frame3D {
      *
      * To transform from world to local, we need M^(-1):
      *
-     *         | Xx  Xy  Xz  -X·O |
+     *          | Xx  Xy  Xz  -X·O |
      * M^(-1) = | Yx  Yy  Yz  -Y·O |
-     *         | Zx  Zy  Zz  -Z·O |
-     *         | 0   0   0    1   |
+     *          | Zx  Zy  Zz  -Z·O |
+     *          | 0   0   0    1   |
      *
      * The inverse is simple because the rotation part is orthonormal (transpose = inverse).
      *

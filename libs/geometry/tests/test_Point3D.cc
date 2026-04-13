@@ -39,13 +39,12 @@
  *   operator<< emits "Point3D(x, y, z)".
  */
 
-#include <doctest/doctest.h>
-
 #include "geometry/Point3D.hh"
 #include "geometry/Vector3D.hh"
 
-#include <cmath>
+#include <doctest/doctest.h>
 #include <sstream>
+
 
 using namespace geometry;
 

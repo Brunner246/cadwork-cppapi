@@ -8,7 +8,6 @@
 #include <optional>
 #include <ostream>
 
-
 namespace geometry {
 
 /**
@@ -216,6 +215,13 @@ class GEOMETRY_API Plane3D {
     // Stream output
     friend GEOMETRY_API std::ostream &operator<<(std::ostream &os, const Plane3D &plane);
 
+    // Copy, move, and destructor (defaulted)
+    Plane3D(const Plane3D &) = default;
+    Plane3D(Plane3D &&) noexcept = default;
+    Plane3D &operator=(const Plane3D &) = default;
+    Plane3D &operator=(Plane3D &&) noexcept = default;
+    ~Plane3D() = default;
+
   private:
     Point3D m_point;   ///< A point on the plane
     Vector3D m_normal; ///< Unit normal vector
@@ -252,13 +258,6 @@ class GEOMETRY_API Plane3D {
      * @param d Distance coefficient.
      */
     Plane3D(double a, double b, double c, double d);
-
-    // Copy and move (defaulted)
-    Plane3D(const Plane3D &) = default;
-    Plane3D(Plane3D &&) noexcept = default;
-    Plane3D &operator=(const Plane3D &) = default;
-    Plane3D &operator=(Plane3D &&) noexcept = default;
-    ~Plane3D() = default;
 };
 } // namespace geometry
 #endif // GEOMETRY_PLANE3D_HH

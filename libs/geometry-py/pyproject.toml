@@ -1,0 +1,20 @@
+[project]
+name = "geometry-py"
+version = "0.1.0"
+description = "3D geometry library with Vector3D, Point3D, Frame3D, and Plane3D"
+readme = "README.md"
+authors = [
+    { name = "Michael Brunner", email = "brunner@cadwork.swiss" }
+]
+requires-python = ">=3.14"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["uv_build>=0.9.29,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
