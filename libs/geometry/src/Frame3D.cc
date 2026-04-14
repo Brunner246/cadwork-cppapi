@@ -74,7 +74,7 @@ Point3D Frame3D::worldToLocalMatrix(const Point3D &worldPoint) const {
     const double lz = invMatrix[8] * worldPoint.x + invMatrix[9] * worldPoint.y
                     + invMatrix[10] * worldPoint.z + invMatrix[11];
 
-    return Point3D(lx, ly, lz);
+    return {lx, ly, lz};
 }
 
 Point3D Frame3D::localToWorldMatrix(const Point3D &localPoint) const {
@@ -89,7 +89,7 @@ Point3D Frame3D::localToWorldMatrix(const Point3D &localPoint) const {
     const double wz = matrix[8] * localPoint.x + matrix[9] * localPoint.y
                     + matrix[10] * localPoint.z + matrix[11];
 
-    return Point3D(wx, wy, wz);
+    return {wx, wy, wz};
 }
 
 Vector3D Frame3D::worldToLocalMatrix(const Vector3D &worldVector) const {
@@ -102,7 +102,7 @@ Vector3D Frame3D::worldToLocalMatrix(const Vector3D &worldVector) const {
     const double lz =
         m_axisZ.x * worldVector.x + m_axisZ.y * worldVector.y + m_axisZ.z * worldVector.z;
 
-    return Vector3D(lx, ly, lz);
+    return {lx, ly, lz};
 }
 
 Vector3D Frame3D::localToWorldMatrix(const Vector3D &localVector) const {
@@ -114,7 +114,7 @@ Vector3D Frame3D::localToWorldMatrix(const Vector3D &localVector) const {
     const double wz =
         m_axisX.z * localVector.x + m_axisY.z * localVector.y + m_axisZ.z * localVector.z;
 
-    return Vector3D(wx, wy, wz);
+    return {wx, wy, wz};
 }
 
 std::array<double, 16> Frame3D::getTransformationMatrix() const {
@@ -198,7 +198,7 @@ Point3D Frame3D::worldToLocalDotProduct(const Point3D &worldPoint) const {
     const double localY = displacement.dot(m_axisY);
     const double localZ = displacement.dot(m_axisZ);
 
-    return Point3D(localX, localY, localZ);
+    return {localX, localY, localZ};
 }
 
 Point3D Frame3D::localToWorldDotProduct(const Point3D &localPoint) const {
@@ -213,7 +213,7 @@ Point3D Frame3D::localToWorldDotProduct(const Point3D &localPoint) const {
     const double worldZ =
         m_origin.z + localPoint.x * m_axisX.z + localPoint.y * m_axisY.z + localPoint.z * m_axisZ.z;
 
-    return Point3D(worldX, worldY, worldZ);
+    return {worldX, worldY, worldZ};
 }
 
 Vector3D Frame3D::worldToLocalDotProduct(const Vector3D &worldVector) const {
@@ -222,7 +222,7 @@ Vector3D Frame3D::worldToLocalDotProduct(const Vector3D &worldVector) const {
     const double localY = worldVector.dot(m_axisY);
     const double localZ = worldVector.dot(m_axisZ);
 
-    return Vector3D(localX, localY, localZ);
+    return {localX, localY, localZ};
 }
 
 Vector3D Frame3D::localToWorldDotProduct(const Vector3D &localVector) const {
@@ -236,7 +236,7 @@ Vector3D Frame3D::localToWorldDotProduct(const Vector3D &localVector) const {
     const double worldZ =
         localVector.x * m_axisX.z + localVector.y * m_axisY.z + localVector.z * m_axisZ.z;
 
-    return Vector3D(worldX, worldY, worldZ);
+    return {worldX, worldY, worldZ};
 }
 
 // ============================================================================
@@ -285,7 +285,7 @@ bool Frame3D::isOrthonormal(double tolerance) const {
 }
 
 Frame3D Frame3D::worldFrame() {
-    return Frame3D();
+    return {};
 }
 
 std::ostream &operator<<(std::ostream &os, const Frame3D &frame) {

@@ -13,12 +13,12 @@
 #include <string>
 #include <utility>
 
-
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
+#include <algorithm>
 
 namespace {
-[[nodiscard]] inline std::string toUtf8(std::wstring_view wstr) {
+[[nodiscard]] inline std::string toUtf8(const std::wstring_view wstr) {
     if (wstr.empty()) {
         return {};
     }
@@ -31,11 +31,6 @@ namespace {
     return result;
 }
 
-// Minimal function so the DLL has at least one symbol
-void appHello() {
-    std::cout << "Hello from app DLL" << std::endl;
-}
-
 enum class ElementType {
     Wall,
     Floor,
@@ -45,7 +40,7 @@ enum class ElementType {
     Plate,
 };
 
-std::string_view toString(ElementType type) {
+std::string_view toString(const ElementType type) {
     switch (type) {
         case ElementType::Wall:
             return "Wall";
@@ -92,16 +87,16 @@ auto toElementData(CwAPI3D::Interfaces::ICwAPI3DElementIDList *elementIDs,
     const auto count = elementIDs->count();
     for (int i = 0; std::cmp_less(i, count); ++i) {
         const auto elementId = elementIDs->at(i);
-        std::string name = getNameFunc(elementId);
-        std::optional<ElementType> type = getTypeFunc(elementId);
-        geometry::Frame3D localFrame = getFrameFunc(elementId);
+        std::string const name = getNameFunc(elementId);
+        std::optional<ElementType> const type = getTypeFunc(elementId);
+        geometry::Frame3D const localFrame = getFrameFunc(elementId);
         elements.emplace_back(
             ElementData{.id = elementId, .name = name, .type = type, .localFrame = localFrame});
     }
     return elements;
 }
 
-void print_chunks(auto view, std::string_view separator = ", ") {
+void print_chunks(auto view, const std::string_view separator = ", ") {
     for (auto const subrange : view) {
         std::cout << '[';
         for (std::string_view prefix; auto const &elem : subrange)
@@ -110,27 +105,52 @@ void print_chunks(auto view, std::string_view separator = ", ") {
     }
     std::cout << '\n';
 }
+
+class Person {
+  public:
+    int getAge() const { return age; }
+
+  private:
+    int age = 0;
+};
 } // namespace
 
 CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool {
     std::cout << "Initializing plugin with factory: " << factory << '\n';
 
+    std::vector<int> v{1, 2, 3, 4, 5, 6};
+    std::vector<int> out;
+    auto [in, out_it] = std::ranges::copy(v, std::back_inserter(out));
+
+
+    std::vector<std::string> words{"hello", "world", "cpp"};
+
+    auto upper = words | std::views::transform([](std::string s) {
+                     std::ranges::transform(s, s.begin(), ::toupper);
+                     return s;
+                 });
+    std::ranges::copy(upper, std::ostream_iterator<std::string>(std::cout, " "));
+
+    std::vector<Person> people;
+    std::ranges::sort(people, std::less<>{}, &Person::getAge);
+
     auto *elementController = factory->getElementController();
     auto *elementIDs = elementController->getActiveIdentifiableElementIDs();
 
     auto *attributeController = factory->getAttributeController();
-    auto getNameFunc = [attributeController](uint64_t elementId) -> std::string {
+    auto getNameFunc = [attributeController](const uint64_t elementId) -> std::string {
         auto *nameAttr = attributeController->getName(elementId);
         if (nameAttr) {
-            std::wstring wname = nameAttr->data();
+            std::wstring const wname = nameAttr->data();
             return toUtf8(wname);
         }
         return "Unknown";
     };
 
-    auto getTypeFunc = [attributeController](uint64_t elementId) -> std::optional<ElementType> {
-        auto *typeAttr = attributeController->getElementType(elementId);
-        if (typeAttr->isFramedWall()) {
+    auto getTypeFunc =
+        [attributeController](const uint64_t elementId) -> std::optional<ElementType> {
+        if (auto *typeAttr = attributeController->getElementType(elementId);
+            typeAttr->isFramedWall()) {
             return ElementType::Wall;
         } else if (typeAttr->isFloor()) {
             return ElementType::Floor;
@@ -148,7 +168,7 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
 
     auto *geometryController = factory->getGeometryController();
 
-    auto getFrameFunc = [geometryController](uint64_t elementId) -> geometry::Frame3D {
+    auto getFrameFunc = [geometryController](const uint64_t elementId) -> geometry::Frame3D {
         const auto origin = geometryController->getP1(elementId);
         const auto axisX = geometryController->getXL(elementId);
         const auto axisY = geometryController->getYL(elementId);
