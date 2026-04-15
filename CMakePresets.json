@@ -5,7 +5,6 @@
     "minor": 21,
     "patch": 0
   },
-  "include": [],
   "configurePresets": [
     {
       "name": "ninja-base",
@@ -20,7 +19,5 @@
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     }
-  ],
-  "buildPresets": [],
-  "testPresets": []
+  ]
 }
