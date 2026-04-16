@@ -1,6 +1,11 @@
 {
   "configurations": [
     {
+      "name": "(Windows) Attach",
+      "type": "cppvsdbg",
+      "request": "attach"
+    },
+    {
       "type": "cmake",
       "request": "launch",
       "name": "Debug portfile(s)",

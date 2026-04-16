@@ -10,8 +10,10 @@
 #include <iterator>
 #include <optional>
 #include <ranges>
+#include <stdexcept>
 #include <string>
 #include <utility>
+#include <vector>
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -89,9 +91,17 @@ auto toElementData(CwAPI3D::Interfaces::ICwAPI3DElementIDList *elementIDs,
         const auto elementId = elementIDs->at(i);
         std::string const name = getNameFunc(elementId);
         std::optional<ElementType> const type = getTypeFunc(elementId);
-        geometry::Frame3D const localFrame = getFrameFunc(elementId);
-        elements.emplace_back(
-            ElementData{.id = elementId, .name = name, .type = type, .localFrame = localFrame});
+        try {
+            geometry::Frame3D const localFrame = getFrameFunc(elementId);
+            elements.emplace_back(
+                ElementData{.id = elementId, .name = name, .type = type, .localFrame = localFrame});
+        } catch (const std::invalid_argument &e) {
+            std::cerr << "Error getting frame for element ID " << elementId << ": " << e.what()
+                      << " This element will be skipped." << '\n';
+            // Optionally
+            // elements.emplace_back(ElementData{.id = elementId, .name = name, .type = type,
+            // .localFrame = geometry::Frame3D::worldFrame()});
+        }
     }
     return elements;
 }
@@ -108,7 +118,7 @@ void print_chunks(auto view, const std::string_view separator = ", ") {
 
 class Person {
   public:
-    int getAge() const { return age; }
+    [[nodiscard]] int getAge() const { return age; }
 
   private:
     int age = 0;
@@ -122,7 +132,6 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
     std::vector<int> out;
     auto [in, out_it] = std::ranges::copy(v, std::back_inserter(out));
 
-
     std::vector<std::string> words{"hello", "world", "cpp"};
 
     auto upper = words | std::views::transform([](std::string s) {
@@ -133,6 +142,19 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
 
     std::vector<Person> people;
     std::ranges::sort(people, std::less<>{}, &Person::getAge);
+
+    // ========== Plugin-specific code starts here ==========
+
+    auto *nameList = factory->getAttributeController()->getNameListItems();
+    std::vector<std::wstring> names;
+    names.reserve(nameList->count());
+    for (uint32_t i = 0; std::cmp_less(i, nameList->count()); ++i) {
+        names.emplace_back(nameList->at(i)->data());
+    }
+    auto namesStdString = names | std::views::transform(&toUtf8) | std::ranges::to<std::vector>();
+    std::cout << "Element names: ";
+    std::ranges::copy(namesStdString, std::ostream_iterator<std::string>(std::cout, ", "));
+    std::cout << '\n';
 
     auto *elementController = factory->getElementController();
     auto *elementIDs = elementController->getActiveIdentifiableElementIDs();
@@ -180,12 +202,14 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
 
     std::vector<ElementData> elements =
         toElementData(elementIDs, getNameFunc, getTypeFunc, getFrameFunc);
+    // clang-format off
     const auto filteredElements =
-        elements | std::views::filter([](const ElementData &e) { return e.type.has_value(); })
-        | std::views::filter(
-            [](const ElementData &e) { return e.type.value() == ElementType::Beam; })
+        elements 
+        | std::views::filter([](const ElementData &e) { return e.type.has_value(); })
+        | std::views::filter([](const ElementData &e) { return e.type.value() == ElementType::Beam; })
         | std::views::transform([](const ElementData &e) { return e; })
         | std::ranges::to<std::vector>();
+    // clang-format on
 
     std::cout << "Filtered beam elements: ";
     std::ranges::copy(filteredElements, std::ostream_iterator<ElementData>(std::cout, "; "));
