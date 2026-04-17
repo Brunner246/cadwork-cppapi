@@ -7,7 +7,9 @@ authors = [
     { name = "Michael Brunner", email = "brunner@cadwork.swiss" }
 ]
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "cwapi3d>=32.443.6",
+]
 
 [dependency-groups]
 dev = ["pytest>=8.0"]

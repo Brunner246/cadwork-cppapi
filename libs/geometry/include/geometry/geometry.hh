@@ -10,9 +10,15 @@
  * - Vector3D
  * - Frame3D
  * - Plane3D
+ * - Loop
+ * - Face
+ * - Brep
  */
 
+#include "geometry/Brep.hh"
+#include "geometry/Face.hh"
 #include "geometry/Frame3D.hh"
+#include "geometry/Loop.hh"
 #include "geometry/Plane3D.hh"
 #include "geometry/Point3D.hh"
 #include "geometry/Vector3D.hh"

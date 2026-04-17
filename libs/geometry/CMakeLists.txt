@@ -38,6 +38,9 @@ target_sources(${PROJECT_NAME}
         src/Vector3D.cc
         src/Frame3D.cc
         src/Plane3D.cc
+        src/Loop.cc
+        src/Face.cc
+        src/Brep.cc
 )
 
 # ==============================================================================

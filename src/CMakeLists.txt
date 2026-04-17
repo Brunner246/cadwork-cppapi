@@ -5,6 +5,7 @@ find_package(CwAPI3D CONFIG REQUIRED)
 
 target_sources(${PROJECT_NAME} PRIVATE
     app.cpp
+    cwapi_brep_adapter.cc
 )
 
 target_link_libraries(${PROJECT_NAME}

@@ -1,8 +1,12 @@
+#include "cwapi_brep_adapter.hh"
+
 #include <cstdint>
 #include <cwapi3d/CwAPI3D.h>
 #include <cwapi3d/CwAPI3DTypes.h>
 #include <cwapi3d/ICwAPI3DElementIDList.h>
+#include <cwapi3d/ICwAPI3DFacetList.h>
 #include <functional>
+#include <geometry/Brep.hh>
 #include <geometry/Frame3D.hh>
 #include <geometry/Point3D.hh>
 #include <geometry/Vector3D.hh>
@@ -14,6 +18,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 
 #define WIN32_LEAN_AND_MEAN
 #include <Windows.h>
@@ -144,7 +149,6 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
     std::ranges::sort(people, std::less<>{}, &Person::getAge);
 
     // ========== Plugin-specific code starts here ==========
-
     auto *nameList = factory->getAttributeController()->getNameListItems();
     std::vector<std::wstring> names;
     names.reserve(nameList->count());
@@ -222,6 +226,19 @@ CWAPI3D_PLUGIN auto plugin_x64_init(CwAPI3D::ControllerFactory *factory) -> bool
         // const auto lToWorldPoint = firstBeam.localFrame.localToWorld(localPoint);
         elementController->createNode(
             CwAPI3D::vector3D{lToWorldPoint.x, lToWorldPoint.y, lToWorldPoint.z});
+
+        auto *facetList = geometryController->getElementFacets(firstBeam.id);
+        const geometry::Brep brep = cwapi_adapter::toBrep(facetList);
+        if (facetList != nullptr) {
+            facetList->destroy();
+        }
+        std::cout << "Brep for element " << firstBeam.id << ": " << brep << '\n';
+        for (std::size_t i = 0; i < brep.faceCount(); ++i) {
+            const auto &face = brep.faceAt(i);
+            std::cout << "  face " << i << ": outer=" << face.outerLoop().vertexCount()
+                      << " verts, holes=" << face.innerLoopCount() << ", normal=" << face.normal()
+                      << '\n';
+        }
     }
 
     std::initializer_list v1 = {1, 2, 3, 1, 2, 3, 3, 3, 1, 2, 3};

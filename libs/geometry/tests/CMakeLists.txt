@@ -23,6 +23,9 @@ add_executable(geometry_tests
     test_Point3D.cc
     test_Frame3D.cc
     test_Plane3D.cc
+    test_Loop.cc
+    test_Face.cc
+    test_Brep.cc
 )
 
 target_link_libraries(geometry_tests

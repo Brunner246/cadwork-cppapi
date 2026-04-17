@@ -12,9 +12,21 @@ wheels = [
 ]
 
 [[package]]
+name = "cwapi3d"
+version = "32.443.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a9/cf/bc427aa5d246d313a04f8c12a015f2b96a1b7851108f488eb1fa743fd7f4/cwapi3d-32.443.6.tar.gz", hash = "sha256:d425e238d31a50891c6b67d1ff398d419aeac0d66fa8269f2cb5cd1ca9d2dc57", size = 68145, upload-time = "2026-04-15T08:20:13.514Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/00/33/1089738e3924357f98ffcd53d1485077a09045c6258ff9297471412ebee7/cwapi3d-32.443.6-py3-none-any.whl", hash = "sha256:327b9a2ad164154c2e2c072963b277f836b1d9181ca06e68db02c6abc3052742", size = 88981, upload-time = "2026-04-15T08:20:12.1Z" },
+]
+
+[[package]]
 name = "geometry-py"
 version = "0.1.0"
 source = { editable = "." }
+dependencies = [
+    { name = "cwapi3d" },
+]
 
 [package.dev-dependencies]
 dev = [
@@ -22,6 +34,7 @@ dev = [
 ]
 
 [package.metadata]
+requires-dist = [{ name = "cwapi3d", specifier = ">=32.443.6" }]
 
 [package.metadata.requires-dev]
 dev = [{ name = "pytest", specifier = ">=8.0" }]
