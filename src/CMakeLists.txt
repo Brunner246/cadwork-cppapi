@@ -4,7 +4,7 @@ add_library(${PROJECT_NAME} SHARED)
 find_package(CwAPI3D CONFIG REQUIRED)
 
 target_sources(${PROJECT_NAME} PRIVATE
-    app.cpp
+    app.cc
     cwapi_brep_adapter.cc
 )
 
@@ -19,3 +19,5 @@ target_compile_definitions(${PROJECT_NAME} PRIVATE
         CWAPI3D_AUTHOR_NAME=L"Your Name"
         CWAPI3D_AUTHOR_EMAIL=L"your_name@something.swiss"
 )
+
+add_executable(exec main.cc)
