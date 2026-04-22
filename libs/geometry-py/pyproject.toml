@@ -9,6 +9,7 @@ authors = [
 requires-python = ">=3.14"
 dependencies = [
     "cwapi3d>=32.443.6",
+    "rtree>=1.3",
 ]
 
 [dependency-groups]

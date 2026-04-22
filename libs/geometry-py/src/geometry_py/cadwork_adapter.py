@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from geometry_py.aabb import AxisAlignedBoundingBox
 from geometry_py.brep import Brep
 from geometry_py.face import Face
 from geometry_py.loop import Loop
@@ -22,12 +23,29 @@ if TYPE_CHECKING:
     from cadwork.vertex_list import vertex_list
 
 
+def _points_from_vertex_list(verts: vertex_list) -> list[Point3D]:
+    return [
+        Point3D(p.x, p.y, p.z)
+        for p in (verts.at(i) for i in range(verts.count()))
+    ]
+
+
 def _loop_from_vertex_list(verts: vertex_list) -> Loop:
-    points: list[Point3D] = []
-    for i in range(verts.count()):
-        p = verts.at(i)
-        points.append(Point3D(p.x, p.y, p.z))
-    return Loop(points)
+    return Loop(_points_from_vertex_list(verts))
+
+
+def aabb_from_vertex_list(verts: vertex_list) -> AxisAlignedBoundingBox:
+    """Build an :class:`AxisAlignedBoundingBox` from a cadwork ``vertex_list``.
+
+    The typical caller passes the 8 vertices of an element's oriented
+    bounding box (OOB); the returned AABB encloses those vertices on the
+    world axes and is suitable for insertion into a
+    :class:`~geometry_py.spatial_index.SpatialIndex3D`.
+
+    Raises:
+        ValueError: if ``verts`` is empty.
+    """
+    return AxisAlignedBoundingBox(_points_from_vertex_list(verts))
 
 
 def brep_from_facet_list(facets: facet_list) -> Brep:
